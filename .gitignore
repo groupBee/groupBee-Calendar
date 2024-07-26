@@ -45,6 +45,8 @@
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+.idea/workspace.xml
+
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
@@ -165,7 +167,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-.idea
 build
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,macos,windows,git,dotenv
