@@ -64,6 +64,8 @@
 *.iml
 *.ipr
 
+application.yaml
+
 # CMake
 cmake-build-*/
 
