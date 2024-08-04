@@ -1,4 +1,4 @@
-package groupbee.calendar.entity;
+package groupbee.calendar.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

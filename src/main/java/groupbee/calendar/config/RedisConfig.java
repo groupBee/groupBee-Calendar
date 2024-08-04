@@ -1,5 +1,5 @@
 package groupbee.calendar.config;
-
+import groupbee.calendar.pubsub.RedisSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +10,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -42,17 +43,24 @@ public class RedisConfig {
         return redisTemplate;
     }
 
+    @Bean
+    MessageListenerAdapter messageListenerAdapter(RedisSubscriber redisSubscriber) {
+        return new MessageListenerAdapter(redisSubscriber);
+    }
+
     // redis 에 발행 데이터가 있는지 확인
     @Bean
-    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory redisConnectionFactory) {
+    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory redisConnectionFactory, MessageListenerAdapter messageListenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
+        container.addMessageListener(messageListenerAdapter, topic());
         return container;
     }
 
     // channelTopic 설정
+    // Redis 에서 pub/sub 할 채널을 지정.
     @Bean
-    public ChannelTopic channelTopic() {
-        return new ChannelTopic("pubsub");
+    public ChannelTopic topic() {
+        return new ChannelTopic("book");
     }
 }
