@@ -1,5 +1,5 @@
 package groupbee.calendar.config;
-import groupbee.calendar.pubsub.RedisSubscriber;
+import groupbee.calendar.pubsub.CarBookSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -44,8 +44,8 @@ public class RedisConfig {
     }
 
     @Bean
-    MessageListenerAdapter messageListenerAdapter(RedisSubscriber redisSubscriber) {
-        return new MessageListenerAdapter(redisSubscriber);
+    MessageListenerAdapter messageListenerAdapter(CarBookSubscriber carBookSubscriber) {
+        return new MessageListenerAdapter(carBookSubscriber);
     }
 
     // redis 에 발행 데이터가 있는지 확인
@@ -61,6 +61,6 @@ public class RedisConfig {
     // Redis 에서 pub/sub 할 채널을 지정.
     @Bean
     public ChannelTopic topic() {
-        return new ChannelTopic("book");
+        return new ChannelTopic("car-book-events");
     }
 }
