@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -38,6 +39,8 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
         return redisTemplate;
@@ -55,6 +58,11 @@ public class RedisConfig {
         container.setConnectionFactory(redisConnectionFactory);
         container.addMessageListener(messageListenerAdapter, topic());
         return container;
+    }
+
+    @Bean
+    public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate) {
+        return redisTemplate.opsForHash();
     }
 
     // channelTopic 설정

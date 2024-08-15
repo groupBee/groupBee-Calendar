@@ -1,15 +1,19 @@
 package groupbee.calendar.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @ToString
+@Builder
 @Table(name = "calendar")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class CalendarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,22 +21,23 @@ public class CalendarEntity {
     private Long id;
 
     @Column(name="member_id")
-    private Long memberId;
+    private String memberId;
 
     @Column(name="year")
-    private Long year;
+    private int year;
 
     @Column(name="month")
-    private Long month;
+    private int month;
 
     @Column(name="day")
-    private Long day;
+    private int day;
 
     @Column(name="content")
     private String content;
 
     @Column(name="create_day")
-    private String createDay;
+    @CreationTimestamp
+    private LocalDateTime createDay;
 
     @Column(name="title")
     private String title;
