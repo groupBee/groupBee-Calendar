@@ -4,6 +4,7 @@ import groupbee.calendar.entity.CalendarEntity;
 import groupbee.calendar.service.calendar.CalendarService;
 import groupbee.calendar.service.feign.FeignClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,13 +19,13 @@ public class CalendarController {
 
     // 전체 리스트 출력
     @GetMapping("/list")
-    List<CalendarEntity> findByMemberId() {
+    ResponseEntity<List<CalendarEntity>> findByMemberId() {
         return calendarService.findByMemberId();
     }
 
     // 멤버 아이디를 기준으로 데이터 입력
     @PostMapping("/write")
-    public CalendarEntity save(@RequestBody CalendarEntity calendarEntity) {
+    public ResponseEntity<CalendarEntity> save(@RequestBody CalendarEntity calendarEntity) {
         return calendarService.save(calendarEntity);
     }
 
