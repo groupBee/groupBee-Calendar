@@ -26,6 +26,7 @@ public class CalendarController {
     // 멤버 아이디를 기준으로 데이터 입력
     @PostMapping("/write")
     public ResponseEntity<CalendarEntity> save(@RequestBody CalendarEntity calendarEntity) {
+        System.out.println(calendarEntity);
         return calendarService.save(calendarEntity);
     }
 
@@ -43,8 +44,8 @@ public class CalendarController {
     }
 
     // 삭제
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteById(@RequestParam Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         boolean result = calendarService.deleteById(id);
         if (result) {
             return ResponseEntity.ok().build();
@@ -55,8 +56,14 @@ public class CalendarController {
 
     // 수정
     @PutMapping("/{id}")
-    public CalendarEntity update(@PathVariable Long id, @RequestBody CalendarEntity calendarEntity) {
+    public ResponseEntity<CalendarEntity> update(@PathVariable Long id, @RequestBody CalendarEntity calendarEntity) {
         calendarEntity.setId(id);
         return calendarService.update(calendarEntity);
+    }
+
+    // 수정
+    @GetMapping("/{id}")
+    public ResponseEntity<CalendarEntity> findById(@PathVariable Long id) {
+        return calendarService.findById(id);
     }
 }

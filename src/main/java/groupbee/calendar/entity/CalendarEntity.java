@@ -23,14 +23,11 @@ public class CalendarEntity {
     @Column(name="member_id")
     private String memberId;
 
-    @Column(name="year")
-    private int year;
+    @Column(name="start_day")
+    private LocalDateTime startDay;
 
-    @Column(name="month")
-    private int month;
-
-    @Column(name="day")
-    private int day;
+    @Column(name="end_day")
+    private LocalDateTime endDay;
 
     @Column(name="content")
     private String content;

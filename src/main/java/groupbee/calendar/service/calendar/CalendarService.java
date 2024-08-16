@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -77,13 +78,30 @@ public class CalendarService {
         }
     }
 
-    public CalendarEntity update(CalendarEntity calendarEntity) {
-        calendarEntity.setCreateDay(LocalDateTime.now());
+    public ResponseEntity<CalendarEntity> update(CalendarEntity calendarEntity) {
+        try{
+            // OpenFeign 클라이언트를 통해 potal_id 가져오기
+            Map<String, Object> response = feignClient.getEmployeeInfo();
+            Map<String, Object> data = (Map<String, Object>) response.get("data");
+            calendarEntity.setMemberId((String) data.get("potal_id"));
+            calendarEntity.setCreateDay(LocalDateTime.now());
 
-        CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
-        System.out.println(saveEntity.getCreateDay());
-
-        return saveEntity;
+            CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
+            System.out.println(saveEntity.getCreateDay());
+            return ResponseEntity.ok(saveEntity);
+        } catch (FeignException.BadRequest e) {
+            // 400 Bad Request 발생 시 처리
+            System.out.println("Bad Request: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (FeignException e) {
+            // 기타 FeignException 발생 시 처리
+            System.out.println("Feign Exception: " + e.getMessage());
+            return ResponseEntity.status(e.status()).build();
+        } catch (Exception e) {
+            // 일반 예외 처리
+            System.out.println("Exception: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     public boolean deleteById(Long id) {
@@ -92,6 +110,15 @@ public class CalendarService {
             return true; // 삭제 성공
         } else {
             return false; // 삭제 실패
+        }
+    }
+
+    public ResponseEntity<CalendarEntity> findById(Long id) {
+        try {
+            Optional<CalendarEntity> event = calendarRepository.findById(id);
+            return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
