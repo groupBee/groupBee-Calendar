@@ -44,8 +44,13 @@ public class CalendarController {
 
     // 삭제
     @DeleteMapping("/delete")
-    public void deleteById(@RequestParam Long id) {
-        calendarService.deleteById(id);
+    public ResponseEntity<Void> deleteById(@RequestParam Long id) {
+        boolean result = calendarService.deleteById(id);
+        if (result) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // 수정

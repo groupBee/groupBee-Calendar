@@ -86,7 +86,12 @@ public class CalendarService {
         return saveEntity;
     }
 
-    public void deleteById(Long id) {
-        calendarRepository.deleteById(id);
+    public boolean deleteById(Long id) {
+        if (calendarRepository.existsById(id)) {
+            calendarRepository.deleteById(id);
+            return true; // 삭제 성공
+        } else {
+            return false; // 삭제 실패
+        }
     }
 }
