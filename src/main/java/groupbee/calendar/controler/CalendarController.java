@@ -61,7 +61,7 @@ public class CalendarController {
         return calendarService.update(calendarEntity);
     }
 
-    // 수정
+    // 수정하기 위한 데이터 가지고 오기
     @GetMapping("/{id}")
     public ResponseEntity<CalendarEntity> findById(@PathVariable Long id) {
         return calendarService.findById(id);

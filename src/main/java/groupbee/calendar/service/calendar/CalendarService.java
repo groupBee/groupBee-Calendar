@@ -1,6 +1,8 @@
 package groupbee.calendar.service.calendar;
 
 import feign.FeignException;
+import groupbee.calendar.dto.CarBookDto;
+import groupbee.calendar.dto.RoomBookDto;
 import groupbee.calendar.entity.CalendarEntity;
 import groupbee.calendar.repository.CalendarRepository;
 import groupbee.calendar.service.feign.FeignClient;
@@ -107,6 +109,7 @@ public class CalendarService {
     public boolean deleteById(Long id) {
         if (calendarRepository.existsById(id)) {
             calendarRepository.deleteById(id);
+
             return true; // 삭제 성공
         } else {
             return false; // 삭제 실패
@@ -120,5 +123,33 @@ public class CalendarService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    public void saveCarBookEvent(CarBookDto carBookDto) {
+        CalendarEntity calendarEntity = CalendarEntity.builder()
+                .corporateCarId(carBookDto.getId())
+                .memberId(carBookDto.getMemberId())
+                .startDay(carBookDto.getRentDay())
+                .endDay(carBookDto.getReturnDay())
+                .content(carBookDto.getReason())
+                .roomId(-1L) // 회의실 ID는 없기 때문에 -1
+                .bookType(1L) // Car 는 1로 지정
+                .title("차량 예약")
+                .build();
+        calendarRepository.save(calendarEntity);
+    }
+
+    public void saveRoomBookEvent(RoomBookDto roomBookDto) {
+        CalendarEntity calendarEntity = CalendarEntity.builder()
+                .roomId(roomBookDto.getId())
+                .memberId(roomBookDto.getMemberId())
+                .startDay(roomBookDto.getEnter())
+                .endDay(roomBookDto.getLeave())
+                .content(roomBookDto.getPurpose())
+                .corporateCarId(-1L) // 차량 ID는 없기 때문에 -1
+                .bookType(2L) // Room 는 2로 지정
+                .title("회의실 예약")
+                .build();
+        calendarRepository.save(calendarEntity);
     }
 }

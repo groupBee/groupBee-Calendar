@@ -2,6 +2,7 @@ package groupbee.calendar.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -38,4 +39,17 @@ public class CalendarEntity {
 
     @Column(name="title")
     private String title;
+
+    @Column(name="corporated_car_id")
+    @ColumnDefault("-1")
+    private Long corporateCarId = -1L;
+
+    @Column(name="room_id")
+    @ColumnDefault("-1")
+    private Long roomId = -1L;
+
+    // 0: default, 1: car, 2: room
+    @Column(name="book_type")
+    @ColumnDefault("0")
+    private Long bookType = 0L;
 }

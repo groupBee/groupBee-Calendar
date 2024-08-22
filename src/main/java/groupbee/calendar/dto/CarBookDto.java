@@ -1,13 +1,25 @@
 package groupbee.calendar.dto;
 
-import lombok.Data;
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 
-@Data
+import java.time.LocalDateTime;
+
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CarBookDto {
-    private Long memberId;
+    private Long id;
+    private String memberId;
     private Long corporateCarId;
-    private LocalDate rentDay;
-    private LocalDate returnDay;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-ddTHH:mm:ss")
+    private LocalDateTime rentDay;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-ddTHH:mm:ss")
+    private LocalDateTime returnDay;
+
     private String reason;
 }
