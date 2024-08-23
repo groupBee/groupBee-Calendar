@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CalendarRepository extends JpaRepository<CalendarEntity, Long> {
     List<CalendarEntity> findByMemberId(String memberId);
+
+    CalendarEntity findByCorporateCarId(Long corporateCarId);
 }
