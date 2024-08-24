@@ -29,6 +29,7 @@ public class CarBookService {
 
     public void deleteCarBookEvent(Long corporateCarId) {
         CalendarEntity calendarEntity = calendarRepository.findByCorporateCarId(corporateCarId);
+        log.info("CarBookService deleteCarBookEvent: {}", calendarEntity);
         if (calendarEntity != null) {
             calendarRepository.delete(calendarEntity);
         } else {
@@ -36,17 +37,17 @@ public class CarBookService {
         }
     }
 
-    public void updateCarBookEvent(CarBookDto carBookDto) {
-        CalendarEntity calendarEntity = CalendarEntity.builder()
-                .corporateCarId(carBookDto.getId())
-                .memberId(carBookDto.getMemberId())
-                .startDay(carBookDto.getRentDay())
-                .endDay(carBookDto.getReturnDay())
-                .content(carBookDto.getReason())
-                .roomId(-1L) // 회의실 ID는 없기 때문에 -1
-                .bookType(1L) // Car 는 1로 지정
-                .title("차량 예약")
-                .build();
-        calendarRepository.save(calendarEntity);
+    public void updateCarBookEvent(Long corporateCarId, CarBookDto carBookDto) {
+        CalendarEntity calendarEntity = calendarRepository.findByCorporateCarId(corporateCarId);
+
+        if (calendarEntity != null) {
+            calendarEntity.setMemberId(carBookDto.getMemberId());
+            calendarEntity.setStartDay(carBookDto.getRentDay());
+            calendarEntity.setEndDay(carBookDto.getReturnDay());
+            calendarEntity.setContent(carBookDto.getReason());
+            calendarRepository.save(calendarEntity);
+        } else {
+            log.info("CarBookService updateCarBookEvent: {}", corporateCarId);
+        }
     }
 }

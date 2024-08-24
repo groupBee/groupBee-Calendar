@@ -106,7 +106,7 @@ public class RedisSubscriber implements MessageListener {
             carBookDto.setRentDay(parsedRentDay);
             carBookDto.setReturnDay(parsedReturnDay);
             carBookDto.setReason(reson);
-            carBookService.updateCarBookEvent(carBookDto);
+            carBookService.updateCarBookEvent(Long.parseLong(id), carBookDto);
         } catch (Exception e) {
             log.error("messageBody is NOT a valid JSON", e);
         }
