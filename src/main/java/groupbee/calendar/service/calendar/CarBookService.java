@@ -15,7 +15,8 @@ public class CarBookService {
 
     public void saveCarBookEvent(CarBookDto carBookDto) {
         CalendarEntity calendarEntity = CalendarEntity.builder()
-                .corporateCarId(carBookDto.getId())
+                .corporateCarBookId(carBookDto.getId())
+                .corporateCarId(carBookDto.getCorporateCarId())
                 .memberId(carBookDto.getMemberId())
                 .startDay(carBookDto.getRentDay())
                 .endDay(carBookDto.getReturnDay())
@@ -27,18 +28,18 @@ public class CarBookService {
         calendarRepository.save(calendarEntity);
     }
 
-    public void deleteCarBookEvent(Long corporateCarId) {
-        CalendarEntity calendarEntity = calendarRepository.findByCorporateCarId(corporateCarId);
+    public void deleteCarBookEvent(Long corporateCarBookId) {
+        CalendarEntity calendarEntity = calendarRepository.findByCorporateCarBookId(corporateCarBookId);
         log.info("CarBookService deleteCarBookEvent: {}", calendarEntity);
         if (calendarEntity != null) {
             calendarRepository.delete(calendarEntity);
         } else {
-            log.info("deleteCarBookEvent: {}", corporateCarId);
+            log.info("deleteCarBookEvent: {}", corporateCarBookId);
         }
     }
 
-    public void updateCarBookEvent(Long corporateCarId, CarBookDto carBookDto) {
-        CalendarEntity calendarEntity = calendarRepository.findByCorporateCarId(corporateCarId);
+    public void updateCarBookEvent(Long corporateCarBookId, CarBookDto carBookDto) {
+        CalendarEntity calendarEntity = calendarRepository.findByCorporateCarBookId(corporateCarBookId);
 
         if (calendarEntity != null) {
             calendarEntity.setMemberId(carBookDto.getMemberId());
@@ -47,7 +48,7 @@ public class CarBookService {
             calendarEntity.setContent(carBookDto.getReason());
             calendarRepository.save(calendarEntity);
         } else {
-            log.info("CarBookService updateCarBookEvent: {}", corporateCarId);
+            log.info("CarBookService updateCarBookEvent: {}", corporateCarBookId);
         }
     }
 }

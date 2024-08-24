@@ -41,7 +41,8 @@ public class RedisSubscriber implements MessageListener {
                     String memberId = rootNode.get("memberId").asText();  // "memberId" 필드 가져오기
                     String rentDay = rootNode.get("rentDay").asText();  // "rentDay" 필드 가져오기
                     String returnDay = rootNode.get("returnDay").asText();  // "returnDay" 필드 가져오기
-                    String reson = rootNode.get("reason").asText();  // "reason" 필드 가져오기
+                    String reason = rootNode.get("reason").asText();  // "reason" 필드 가져오기
+                    String corporateCarId = rootNode.get("corporateCarId").asText();
 
 
                     // LocalDateTime으로 수동 변환 시도
@@ -51,10 +52,11 @@ public class RedisSubscriber implements MessageListener {
                     // 필요한 필드들만 모아서 직접 객체 생성하기
                     CarBookDto carBookDto = new CarBookDto();
                     carBookDto.setId(Long.parseLong(id));
+                    carBookDto.setCorporateCarId(Long.parseLong(corporateCarId));
                     carBookDto.setMemberId(memberId);
                     carBookDto.setRentDay(parsedRentDay);
                     carBookDto.setReturnDay(parsedReturnDay);
-                    carBookDto.setReason(reson);
+                    carBookDto.setReason(reason);
 
                     saveCarBookEvent(carBookDto);
                 } else if ("delete".equals(eventType)) {
@@ -92,7 +94,8 @@ public class RedisSubscriber implements MessageListener {
             String memberId = rootNode.get("memberId").asText();  // "memberId" 필드 가져오기
             String rentDay = rootNode.get("rentDay").asText();  // "rentDay" 필드 가져오기
             String returnDay = rootNode.get("returnDay").asText();  // "returnDay" 필드 가져오기
-            String reson = rootNode.get("reason").asText();  // "reason" 필드 가져오기
+            String reason = rootNode.get("reason").asText();  // "reason" 필드 가져오기
+            String corporateCarId = rootNode.get("corporateCarId").asText();
 
 
             // LocalDateTime으로 수동 변환 시도
@@ -102,10 +105,11 @@ public class RedisSubscriber implements MessageListener {
             // 필요한 필드들만 모아서 직접 객체 생성하기
             CarBookDto carBookDto = new CarBookDto();
             carBookDto.setId(Long.parseLong(id));
+            carBookDto.setCorporateCarId(Long.parseLong(corporateCarId));
             carBookDto.setMemberId(memberId);
             carBookDto.setRentDay(parsedRentDay);
             carBookDto.setReturnDay(parsedReturnDay);
-            carBookDto.setReason(reson);
+            carBookDto.setReason(reason);
             carBookService.updateCarBookEvent(Long.parseLong(id), carBookDto);
         } catch (Exception e) {
             log.error("messageBody is NOT a valid JSON", e);

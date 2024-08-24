@@ -131,7 +131,7 @@ public class CalendarService {
                 .startDay(roomBookDto.getEnter())
                 .endDay(roomBookDto.getLeave())
                 .content(roomBookDto.getPurpose())
-                .corporateCarId(-1L) // 차량 ID는 없기 때문에 -1
+                .corporateCarBookId(-1L) // 차량 ID는 없기 때문에 -1
                 .bookType(2L) // Room 는 2로 지정
                 .title("회의실 예약")
                 .build();

@@ -40,9 +40,13 @@ public class CalendarEntity {
     @Column(name="title")
     private String title;
 
-    @Column(name="corporated_car_id")
+    // 차량 아이디
+    @Column(name="corporated_car_book_id")
     @ColumnDefault("-1")
-    private Long corporateCarId = -1L;
+    private Long corporateCarBookId = -1L;
+
+    @Column(name="corporated_car_id")
+    private Long corporateCarId;
 
     @Column(name="room_id")
     @ColumnDefault("-1")
