@@ -6,6 +6,7 @@ import groupbee.calendar.entity.CalendarEntity;
 import groupbee.calendar.repository.CalendarRepository;
 import groupbee.calendar.service.feign.FeignClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CalendarService {
@@ -106,8 +108,13 @@ public class CalendarService {
     }
 
     public boolean deleteById(Long id) {
+        Optional<CalendarEntity> optionalCalendarEntity = calendarRepository.findById(id);
+
         if (calendarRepository.existsById(id)) {
+            CalendarEntity calendarEntity = optionalCalendarEntity.get();
+            Long carBookId = calendarEntity.getCorporateCarBookId();
             calendarRepository.deleteById(id);
+            feignClient.deleteCar(carBookId);
 
             return true; // 삭제 성공
         } else {

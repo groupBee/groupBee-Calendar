@@ -1,16 +1,24 @@
 package groupbee.calendar.pubsub;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RedisPublisher {
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    public void sendMessage(ChannelTopic topic, String message) {
-        redisTemplate.convertAndSend(topic.getTopic(), message);
-    }
+//    private final RedisTemplate<String, Object> redisTemplate;
+//    private final ChannelTopic topic;
+//    private final ObjectMapper objectMapper;
+//
+//    public void publish(CalendarDto calendarDto) {
+//        try {
+//            String messageJson = objectMapper.writeValueAsString(calendarDto);
+//            log.info("RedisPublisher: {}", messageJson);
+//            redisTemplate.convertAndSend(topic.getTopic(), messageJson);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
