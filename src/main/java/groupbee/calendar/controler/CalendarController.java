@@ -3,6 +3,7 @@ package groupbee.calendar.controler;
 import groupbee.calendar.entity.CalendarEntity;
 import groupbee.calendar.service.calendar.CalendarService;
 import groupbee.calendar.service.feign.FeignClient;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,19 +18,28 @@ public class CalendarController {
     private final CalendarService calendarService;
     private final FeignClient feignClient;
 
-    // 전체 리스트 출력
+    @Operation(
+            summary = "캘린더 전체 리스트 출력",
+            description = "관리자 페이지에서 사용하기 위함"
+    )
     @GetMapping("/list")
     ResponseEntity<List<CalendarEntity>> findByMemberId() {
         return calendarService.findByMemberId();
     }
 
-    // 멤버 아이디를 기준으로 데이터 입력
+    @Operation(
+            summary = "캘린더 일정 추가",
+            description = "멤버 아이디 별 캘린더 일정 추가"
+    )
     @PostMapping("/write")
     public ResponseEntity<CalendarEntity> save(@RequestBody CalendarEntity calendarEntity) {
-        System.out.println(calendarEntity);
         return calendarService.save(calendarEntity);
     }
 
+    @Operation(
+            summary = "feignClient 를 통해 요청",
+            description = "JSON 에서 data 의 정보를 가져오기(테스트용)"
+    )
     @GetMapping("/test")
     public String test() {
         // OpenFeign 클라이언트를 통해 요청 보내기
@@ -43,7 +53,10 @@ public class CalendarController {
         }
     }
 
-    // 삭제
+    @Operation(
+            summary = "캘린더 일정 삭제",
+            description = "캘린더 일정 삭제"
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         boolean result = calendarService.deleteById(id);
@@ -54,14 +67,20 @@ public class CalendarController {
         }
     }
 
-    // 수정
+    @Operation(
+            summary = "캘린더 일정 수정",
+            description = "캘린더 일정 수정"
+    )
     @PutMapping("/{id}")
     public ResponseEntity<CalendarEntity> update(@PathVariable Long id, @RequestBody CalendarEntity calendarEntity) {
         calendarEntity.setId(id);
         return calendarService.update(calendarEntity);
     }
 
-    // 수정하기 위한 데이터 가지고 오기
+    @Operation(
+            summary = "캘린더 일정 수정을 위한 정보 출력",
+            description = "캘린더 일정 수정을 위한 정보 출력"
+    )
     @GetMapping("/{id}")
     public ResponseEntity<CalendarEntity> findById(@PathVariable Long id) {
         return calendarService.findById(id);

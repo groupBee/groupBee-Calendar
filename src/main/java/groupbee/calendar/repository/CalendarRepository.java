@@ -11,4 +11,5 @@ public interface CalendarRepository extends JpaRepository<CalendarEntity, Long> 
     List<CalendarEntity> findByMemberId(String memberId);
 
     CalendarEntity findByCorporateCarBookId(Long corporateCarBookId);
+    CalendarEntity findByRoomId(Long roomId);
 }

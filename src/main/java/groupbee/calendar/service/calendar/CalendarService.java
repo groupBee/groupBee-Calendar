@@ -1,7 +1,6 @@
 package groupbee.calendar.service.calendar;
 
 import feign.FeignException;
-import groupbee.calendar.dto.RoomBookDto;
 import groupbee.calendar.entity.CalendarEntity;
 import groupbee.calendar.repository.CalendarRepository;
 import groupbee.calendar.service.feign.FeignClient;
@@ -10,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +28,7 @@ public class CalendarService {
         try {
             Map<String, Object> response = feignClient.getEmployeeInfo();
             Map<String, Object> data = (Map<String, Object>) response.get("data");
-            String potalId = (String) data.get("potal_id");
+            String potalId = (String) data.get("potalId");
 
             List<CalendarEntity> calendarEntities = calendarRepository.findByMemberId(potalId);
 
@@ -57,7 +57,7 @@ public class CalendarService {
             // OpenFeign 클라이언트를 통해 potal_id 가져오기
             Map<String, Object> response = feignClient.getEmployeeInfo();
             Map<String, Object> data = (Map<String, Object>) response.get("data");
-            calendarEntity.setMemberId((String) data.get("potal_id"));
+            calendarEntity.setMemberId((String) data.get("potalId"));
 
             CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
 
@@ -86,7 +86,7 @@ public class CalendarService {
             // OpenFeign 클라이언트를 통해 potal_id 가져오기
             Map<String, Object> response = feignClient.getEmployeeInfo();
             Map<String, Object> data = (Map<String, Object>) response.get("data");
-            calendarEntity.setMemberId((String) data.get("potal_id"));
+            calendarEntity.setMemberId((String) data.get("potalId"));
             calendarEntity.setCreateDay(LocalDateTime.now());
 
             CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
@@ -110,16 +110,40 @@ public class CalendarService {
     public boolean deleteById(Long id) {
         Optional<CalendarEntity> optionalCalendarEntity = calendarRepository.findById(id);
 
-        if (calendarRepository.existsById(id)) {
+        if (optionalCalendarEntity.isPresent()) {
             CalendarEntity calendarEntity = optionalCalendarEntity.get();
-            Long carBookId = calendarEntity.getCorporateCarBookId();
-            calendarRepository.deleteById(id);
-            feignClient.deleteCar(carBookId);
+            Long bookType = calendarEntity.getBookType();
 
-            return true; // 삭제 성공
+            try {
+                if (bookType == 1) {
+                    Long carBookId = calendarEntity.getCorporateCarBookId();
+                    feignClient.deleteCar(carBookId);
+                } else if (bookType == 2) {
+                    Long roomBookId = calendarEntity.getRoomId();
+                    feignClient.deleteRoom(roomBookId);
+                }
+            } catch (Exception e) {
+                log.error("Failed to delete related resources: {}", e.getMessage());
+                return false;
+            }
+
+            try {
+                deleteCalendarEntity(calendarEntity);
+                return true;
+            } catch (Exception e) {
+                log.error("Failed to delete CalendarEntity: {}", e.getMessage());
+                return false;
+            }
         } else {
-            return false; // 삭제 실패
+
+            log.warn("CalendarEntity with id {} not found", id);
+            return false;
         }
+    }
+
+    @Transactional
+    public void deleteCalendarEntity(CalendarEntity calendarEntity) {
+        calendarRepository.delete(calendarEntity);
     }
 
     public ResponseEntity<CalendarEntity> findById(Long id) {
@@ -129,19 +153,5 @@ public class CalendarService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    public void saveRoomBookEvent(RoomBookDto roomBookDto) {
-        CalendarEntity calendarEntity = CalendarEntity.builder()
-                .roomId(roomBookDto.getId())
-                .memberId(roomBookDto.getMemberId())
-                .startDay(roomBookDto.getEnter())
-                .endDay(roomBookDto.getLeave())
-                .content(roomBookDto.getPurpose())
-                .corporateCarBookId(-1L) // 차량 ID는 없기 때문에 -1
-                .bookType(2L) // Room 는 2로 지정
-                .title("회의실 예약")
-                .build();
-        calendarRepository.save(calendarEntity);
     }
 }

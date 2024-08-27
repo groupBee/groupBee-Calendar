@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import groupbee.calendar.dto.CarBookDto;
 import groupbee.calendar.dto.RoomBookDto;
 import groupbee.calendar.service.calendar.CarBookService;
+import groupbee.calendar.service.calendar.RoomBookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -21,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 public class RedisSubscriber implements MessageListener {
     private final ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
     private final CarBookService carBookService;
+    private final RoomBookService roomBookService;
 
     public void onMessage(Message message, byte[] pattern) {
         String channel = new String(pattern); // 채널 이름을 추출
@@ -65,7 +67,31 @@ public class RedisSubscriber implements MessageListener {
                     updateCarBookEvent(rootNode);
                 }
             } else if ("room-book-events".equals(channel)) {
+                if ("insert".equals(eventType)) {
+                    String id = rootNode.get("id").asText();  // "id" 필드 가져오기
+                    String memberId = rootNode.get("memberId").asText();  // "memberId" 필드 가져오기
+                    String enter = rootNode.get("enter").asText();  // "enter" 필드 가져오기
+                    String leave = rootNode.get("leave").asText();  // "leave" 필드 가져오기
+                    String purpose = rootNode.get("purpose").asText();  // "reason" 필드 가져오기
+                    String roomId = rootNode.get("roomId").asText();
 
+                    LocalDateTime parsedEnter = LocalDateTime.parse(enter, DateTimeFormatter.ISO_DATE_TIME);
+                    LocalDateTime parsedLeave = LocalDateTime.parse(leave, DateTimeFormatter.ISO_DATE_TIME);
+
+                    RoomBookDto roomBookDto = new RoomBookDto();
+                    roomBookDto.setId(Long.parseLong(id));
+                    roomBookDto.setMemberId(memberId);
+                    roomBookDto.setEnter(parsedEnter);
+                    roomBookDto.setLeave(parsedLeave);
+                    roomBookDto.setPurpose(purpose);
+                    roomBookDto.setRoomId(Long.parseLong(roomId));
+
+                    saveRoomBookEvent(roomBookDto);
+                } else if ("delete".equals(eventType)) {
+                    deleteRoomBookEvent(rootNode);
+                } else if ("update".equals(eventType)) {
+                    updateRoomBookEvent(rootNode);
+                }
             }
         } catch (JsonProcessingException e) {
             log.error("[RedisSubscriber] messageBody is NOT a valid JSON", e);
@@ -75,7 +101,11 @@ public class RedisSubscriber implements MessageListener {
     private void saveCarBookEvent(CarBookDto carBookDto) {
         log.info("RedisSubscriber 'saveCarBookEvent': {}", carBookDto);
         carBookService.saveCarBookEvent(carBookDto);
+    }
 
+    private void saveRoomBookEvent(RoomBookDto roomBookDto) {
+        log.info("RedisSubscriber 'saveRoomBookEvent': {}", roomBookDto);
+        roomBookService.saveRoomBookEvent(roomBookDto);
     }
 
     private void deleteCarBookEvent(JsonNode rootNode) {
@@ -83,6 +113,16 @@ public class RedisSubscriber implements MessageListener {
             Long corporateCarId = rootNode.get("id").asLong();
             carBookService.deleteCarBookEvent(corporateCarId);
             log.info("RedisSubscriber 'deleteCarBookEvent': {}", corporateCarId);
+        } catch (Exception e) {
+            log.error("messageBody is NOT a valid JSON", e);
+        }
+    }
+
+    private void deleteRoomBookEvent(JsonNode rootNode) {
+        try {
+            Long roomId = rootNode.get("id").asLong();
+            roomBookService.deleteRoomBookEvent(roomId);
+            log.info("RedisSubscriber 'deleteRoomBookEvent': {}", roomId);
         } catch (Exception e) {
             log.error("messageBody is NOT a valid JSON", e);
         }
@@ -116,7 +156,28 @@ public class RedisSubscriber implements MessageListener {
         }
     }
 
-    private void processRoomBookEvent(RoomBookDto roomBookDto) {
-        log.info("Processing room book event: {}", roomBookDto);
+    private void updateRoomBookEvent(JsonNode rootNode) {
+        try{
+            String id = rootNode.get("id").asText();  // "id" 필드 가져오기
+            String memberId = rootNode.get("memberId").asText();  // "memberId" 필드 가져오기
+            String enter = rootNode.get("enter").asText();  // "enter" 필드 가져오기
+            String leave = rootNode.get("leave").asText();  // "leave" 필드 가져오기
+            String purpose = rootNode.get("purpose").asText();  // "purpose" 필드 가져오기
+            String roomId = rootNode.get("roomId").asText();
+
+            LocalDateTime parsedEnter = LocalDateTime.parse(enter, DateTimeFormatter.ISO_DATE_TIME);
+            LocalDateTime parsedLeave = LocalDateTime.parse(leave, DateTimeFormatter.ISO_DATE_TIME);
+
+            RoomBookDto roomBookDto = new RoomBookDto();
+            roomBookDto.setId(Long.parseLong(id));
+            roomBookDto.setMemberId(memberId);
+            roomBookDto.setEnter(parsedEnter);
+            roomBookDto.setLeave(parsedLeave);
+            roomBookDto.setPurpose(purpose);
+            roomBookDto.setRoomId(Long.parseLong(roomId));
+            roomBookService.updateRoomBookEvent(Long.parseLong(id), roomBookDto);
+        } catch (Exception e) {
+            log.error("messageBody is NOT a valid JSON", e);
+        }
     }
 }

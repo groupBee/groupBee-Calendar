@@ -15,4 +15,7 @@ public interface FeignClient {
 
     @DeleteMapping("/api/cars/delete/{id}")
     void deleteCar(@PathVariable Long id);
+
+    @DeleteMapping("/api/rooms/delete/{id}")
+    void deleteRoom(@PathVariable Long id);
 }
