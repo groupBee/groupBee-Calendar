@@ -27,8 +27,7 @@ public class CalendarService {
     public ResponseEntity<List<CalendarEntity>> findByMemberId() {
         try {
             Map<String, Object> response = feignClient.getEmployeeInfo();
-            Map<String, Object> data = (Map<String, Object>) response.get("data");
-            String potalId = (String) data.get("potalId");
+            String potalId = (String) response.get("potalId");
 
             List<CalendarEntity> calendarEntities = calendarRepository.findByMemberId(potalId);
 
@@ -56,8 +55,7 @@ public class CalendarService {
         try {
             // OpenFeign 클라이언트를 통해 potal_id 가져오기
             Map<String, Object> response = feignClient.getEmployeeInfo();
-            Map<String, Object> data = (Map<String, Object>) response.get("data");
-            calendarEntity.setMemberId((String) data.get("potalId"));
+            String potalId = (String) response.get("potalId");
 
             CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
 
@@ -85,8 +83,7 @@ public class CalendarService {
         try{
             // OpenFeign 클라이언트를 통해 potal_id 가져오기
             Map<String, Object> response = feignClient.getEmployeeInfo();
-            Map<String, Object> data = (Map<String, Object>) response.get("data");
-            calendarEntity.setMemberId((String) data.get("potalId"));
+            String potalId = (String) response.get("potalId");
             calendarEntity.setCreateDay(LocalDateTime.now());
 
             CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
@@ -107,6 +104,7 @@ public class CalendarService {
         }
     }
 
+    @Transactional
     public boolean deleteById(Long id) {
         Optional<CalendarEntity> optionalCalendarEntity = calendarRepository.findById(id);
 
@@ -141,7 +139,6 @@ public class CalendarService {
         }
     }
 
-    @Transactional
     public void deleteCalendarEntity(CalendarEntity calendarEntity) {
         calendarRepository.delete(calendarEntity);
     }

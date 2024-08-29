@@ -5,12 +5,14 @@ import groupbee.calendar.service.calendar.CalendarService;
 import groupbee.calendar.service.feign.FeignClient;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/calendar")
 @RequiredArgsConstructor
@@ -44,13 +46,8 @@ public class CalendarController {
     public String test() {
         // OpenFeign 클라이언트를 통해 요청 보내기
         Map<String, Object> response = feignClient.getEmployeeInfo();
-        Map<String, Object> data = (Map<String, Object>) response.get("data");
-        // 응답에서 potal_id 추출하기
-        if (response.containsKey("data")) {
-            return "Member ID: " + data.get("potal_id").toString();
-        } else {
-            return "Member ID not found in response";
-        }
+        log.info("response: {}", response.get("potalId"));
+        return "test";
     }
 
     @Operation(
@@ -85,4 +82,5 @@ public class CalendarController {
     public ResponseEntity<CalendarEntity> findById(@PathVariable Long id) {
         return calendarService.findById(id);
     }
+
 }
