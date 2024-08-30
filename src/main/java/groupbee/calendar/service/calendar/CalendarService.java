@@ -56,6 +56,7 @@ public class CalendarService {
             // OpenFeign 클라이언트를 통해 potal_id 가져오기
             Map<String, Object> response = feignClient.getEmployeeInfo();
             String potalId = (String) response.get("potalId");
+            calendarEntity.setMemberId(potalId);
 
             CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
 
@@ -84,6 +85,7 @@ public class CalendarService {
             // OpenFeign 클라이언트를 통해 potal_id 가져오기
             Map<String, Object> response = feignClient.getEmployeeInfo();
             String potalId = (String) response.get("potalId");
+            calendarEntity.setMemberId(potalId);
             calendarEntity.setCreateDay(LocalDateTime.now());
 
             CalendarEntity saveEntity = calendarRepository.save(calendarEntity);
