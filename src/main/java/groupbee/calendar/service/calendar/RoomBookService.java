@@ -6,6 +6,7 @@ import groupbee.calendar.repository.CalendarRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -16,6 +17,7 @@ public class RoomBookService {
     public void saveRoomBookEvent(RoomBookDto roomBookDto) {
         CalendarEntity calendarEntity = CalendarEntity.builder()
                 .roomId(roomBookDto.getId())
+                .corporateCarId(roomBookDto.getRoomId())
                 .memberId(roomBookDto.getMemberId())
                 .startDay(roomBookDto.getEnter())
                 .endDay(roomBookDto.getLeave())
@@ -27,6 +29,7 @@ public class RoomBookService {
         calendarRepository.save(calendarEntity);
     }
 
+    @Transactional
     public void deleteRoomBookEvent(Long roomId) {
         CalendarEntity calendarEntity = calendarRepository.findByRoomId(roomId);
         log.info("RoomBookService deleteRoomBookEvent: {}", calendarEntity);

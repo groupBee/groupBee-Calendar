@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -85,7 +86,10 @@ public class CalendarController {
     }
 
     @GetMapping("/list/{year}")
-    public CompletableFuture<ResponseEntity<List<Object>>> getGoogleEvents(@PathVariable int year) throws Exception {
+    public CompletableFuture<ResponseEntity<List<Object>>> getGoogleEvents(@PathVariable(value = "year", required = false) Integer year) throws Exception {
+        if (year == null || year <= 0) {
+            year = LocalDate.now().getYear();  // year가 없거나 잘못된 경우 현재 연도로 설정
+        }
         return calendarService.fetchCombinedEvents(year);
     }
 }

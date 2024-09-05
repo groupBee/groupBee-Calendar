@@ -135,24 +135,18 @@ public class CalendarService {
                 } else if (bookType == 2) {
                     Long roomBookId = calendarEntity.getRoomId();
                     feignClient.deleteRoom(roomBookId);
+                } else if (bookType == 0) {
+                    calendarRepository.deleteById(id);
                 }
             } catch (Exception e) {
                 log.error("Failed to delete related resources: {}", e.getMessage());
                 return false;
             }
-
-            try {
-                deleteCalendarEntity(calendarEntity);
-                return true;
-            } catch (Exception e) {
-                log.error("Failed to delete CalendarEntity: {}", e.getMessage());
-                return false;
-            }
         } else {
-
             log.warn("CalendarEntity with id {} not found", id);
             return false;
         }
+        return true;
     }
 
     public void deleteCalendarEntity(CalendarEntity calendarEntity) {

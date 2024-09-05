@@ -6,6 +6,7 @@ import groupbee.calendar.repository.CalendarRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -28,6 +29,7 @@ public class CarBookService {
         calendarRepository.save(calendarEntity);
     }
 
+    @Transactional
     public void deleteCarBookEvent(Long corporateCarBookId) {
         CalendarEntity calendarEntity = calendarRepository.findByCorporateCarBookId(corporateCarBookId);
         log.info("CarBookService deleteCarBookEvent: {}", calendarEntity);
