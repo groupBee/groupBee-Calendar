@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RestController
@@ -83,4 +84,8 @@ public class CalendarController {
         return calendarService.findById(id);
     }
 
+    @GetMapping("/list/{year}")
+    public CompletableFuture<ResponseEntity<List<Object>>> getGoogleEvents(@PathVariable int year) throws Exception {
+        return calendarService.fetchCombinedEvents(year);
+    }
 }

@@ -34,6 +34,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+    // Google Calendar API
+    implementation 'com.google.api-client:google-api-client:2.6.0'
+    implementation 'com.google.http-client:google-http-client-jackson2:1.44.2'
+    implementation 'com.google.apis:google-api-services-calendar:v3-rev20240705-2.0.0'
+
 
     // mini.io client
     implementation 'io.minio:minio:8.5.11'
