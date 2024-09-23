@@ -1,4 +1,4 @@
-# groupBee Calendar
+# Calendar 📅
 
 ## 프로젝트 개요
 **groupBee**의 캘린더 서비스는 **FullCalendar**를 활용한 일정 관리 시스템입니다.  
